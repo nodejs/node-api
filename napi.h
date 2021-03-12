@@ -610,6 +610,14 @@ namespace Napi {
       uint32_t index /// Property / element index
     );
 
+    /// Gets or sets an indexed property or array element.
+    PropertyLValue<Value> operator[](Value index  /// Property / element index
+    );
+
+    /// Gets or sets an indexed property or array element.
+    PropertyLValue<Value> operator[](Value index  /// Property / element index
+    ) const;
+
     /// Gets a named property.
     Value operator [](
       const char* utf8name ///< UTF-8 encoded null-terminated property name
@@ -784,6 +792,21 @@ namespace Napi {
     inline void AddFinalizer(Finalizer finalizeCallback,
                              T* data,
                              Hint* finalizeHint);
+
+#ifdef NAPI_CPP_EXCEPTIONS
+    class const_iterator;
+
+    inline const_iterator begin() const;
+
+    inline const_iterator end() const;
+
+    class iterator;
+
+    inline iterator begin();
+
+    inline iterator end();
+#endif  // NAPI_CPP_EXCEPTIONS
+
 #if NAPI_VERSION >= 8
     bool Freeze();
     bool Seal();
@@ -823,6 +846,54 @@ namespace Napi {
 
     uint32_t Length() const;
   };
+
+#ifdef NAPI_CPP_EXCEPTIONS
+  class Object::const_iterator {
+   private:
+    enum class Type { BEGIN, END };
+
+    inline const_iterator(const Object* object, const Type type);
+
+   public:
+    inline const_iterator& operator++();
+
+    inline bool operator==(const const_iterator& other) const;
+
+    inline bool operator!=(const const_iterator& other) const;
+
+    inline std::pair<Value, Object::PropertyLValue<Value>> operator*() const;
+
+   private:
+    const Napi::Object* _object;
+    Array _keys;
+    uint32_t _index;
+
+    friend class Object;
+  };
+
+  class Object::iterator {
+   private:
+    enum class Type { BEGIN, END };
+
+    inline iterator(Object* object, const Type type);
+
+   public:
+    inline iterator& operator++();
+
+    inline bool operator==(const iterator& other) const;
+
+    inline bool operator!=(const iterator& other) const;
+
+    inline std::pair<Value, Object::PropertyLValue<Value>> operator*();
+
+   private:
+    Napi::Object* _object;
+    Array _keys;
+    uint32_t _index;
+
+    friend class Object;
+  };
+#endif  // NAPI_CPP_EXCEPTIONS
 
   /// A JavaScript array buffer value.
   class ArrayBuffer : public Object {
