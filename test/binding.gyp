@@ -1,6 +1,7 @@
 {
   'target_defaults': {
     'includes': ['../common.gypi'],
+    'include_dirs': ['./common'],
     'variables': {
       'build_sources': [
         'addon.cc',
@@ -27,6 +28,7 @@
         'function.cc',
         'functionreference.cc',
         'handlescope.cc',
+        'maybe/check.cc',
         'movable_callbacks.cc',
         'memory_management.cc',
         'name.cc',
@@ -90,6 +92,12 @@
       'target_name': 'binding_noexcept',
       'includes': ['../noexcept.gypi'],
       'sources': ['>@(build_sources)']
+    },
+    {
+      'target_name': 'binding_noexcept_maybe',
+      'includes': ['../noexcept.gypi'],
+      'sources': ['>@(build_sources)'],
+      'defines': ['NODE_ADDON_API_ENABLE_MAYBE']
     },
     {
       'target_name': 'binding_swallowexcept',
